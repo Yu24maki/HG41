@@ -9,6 +9,10 @@
 #include "tree.h"
 
 
+#define ROLL_LIMIT (40)
+#define GET_ROT (XMMatrixRotationRollPitchYaw(0.0f, XMConvertToRadians(rand() % 360), XMConvertToRadians(rand() % ROLL_LIMIT)))
+#define SCALING (0.9f)
+#define CLAMP(a, min, max) ((a > max) ? max : (a < min) ? min: a)
 
 
 void CTree::Init()
@@ -60,7 +64,7 @@ void CTree::Draw()
 
 	m_Model->Draw();
 
-
+	DrawChild(world, 1.0f);
 }
 
 
@@ -68,8 +72,24 @@ void CTree::Draw()
 //çƒãAìIÇ…é}ï`âÊ/////////////////////////////////////////////////
 void CTree::DrawChild(XMMATRIX Parent, float Scale)
 {
+	if (Scale < 0.6f)
+		return;
 
+	float rot_z = (float)rand() / RAND_MAX * 1.0f - 0.5f;
+	XMMATRIX world, Rotation;
+	for (int i = 0; i < 3; i++)
+	{
+		world = XMMatrixScaling(Scale, Scale, Scale);
+		world *= GET_ROT;
+		world *= XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+		world *= XMMatrixTranslation(0.0f, 2.0f, 0.0f);
+		world *= Parent;
+		CRenderer::SetWorldMatrix(&world);
 
+		m_Model->Draw();
+
+		DrawChild(world, Scale * SCALING);
+	}
 }
 
 
