@@ -16,6 +16,7 @@ float2 random22(in float2 vec)
     return frac(sin(vec) * 43758.5453123);
 }
 
+// ボロノイ図
 float volonoi2(in float2 vec)
 {
     float2 ivec = floor(vec);
@@ -74,5 +75,37 @@ float3 volonoi_color(in float2 vec)
     }
     color = float3(frac(pos.r), frac(pos.g), frac(pos.r + pos.g));
     return color;
+}
+
+// バリューノイズ2D
+float valueNoise2D(in float2 vec)
+{
+    float2 ivec = floor(vec);
+    float2 fvec = frac(vec);
+    
+    float a = random2(ivec + float2(0.0f, 0.0f));
+    float b = random2(ivec + float2(1.0f, 0.0f));
+    float c = random2(ivec + float2(0.0f, 1.0f));
+    float d = random2(ivec + float2(1.0f, 1.0f));
+    
+    fvec = smoothstep(0.0f, 1.0f, fvec);
+
+    return lerp(lerp(a, b, fvec.x), lerp(c, d, fvec.x), fvec.y);
+}
+
+// パーリンノイズ2D
+float perlinNoise2D(in float2 vec)
+{
+    float2 ivec = floor(vec);
+    float2 fvec = frac(vec);
+    
+    float a = dot(random22(ivec + float2(0.0f, 0.0f)) * 2.0 - 1.0, fvec - float2(0.0f, 0.0f));
+    float b = dot(random22(ivec + float2(1.0f, 0.0f)) * 2.0 - 1.0, fvec - float2(1.0f, 0.0f));
+    float c = dot(random22(ivec + float2(0.0f, 1.0f)) * 2.0 - 1.0, fvec - float2(0.0f, 1.0f));
+    float d = dot(random22(ivec + float2(1.0f, 1.0f)) * 2.0 - 1.0, fvec - float2(1.0f, 1.0f));
+    
+    fvec = smoothstep(0.0f, 1.0f, fvec);
+
+    return lerp(lerp(a, b, fvec.x), lerp(c, d, fvec.x), fvec.y);
 }
 

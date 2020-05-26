@@ -17,11 +17,18 @@ void main( in  float4 inPosition		: SV_POSITION,
 
 			out float4 outDiffuse		: SV_Target )
 {
-
-    outDiffuse.rgb = fmod(floor(inTexCoord.y + inTexCoord.x), 2);
-    outDiffuse.rgb = fmod(fmod(floor(inTexCoord.y * 2), 2) + fmod(floor(inTexCoord.x * 2), 2), 2);
-    outDiffuse.rgb = random2(inTexCoord);
-    outDiffuse.rgb = volonoi_color(inTexCoord);
+    // 斜めストライプ
+    //outDiffuse.rgb = fmod(floor(inTexCoord.y + inTexCoord.x), 2);
+    // チェック
+    //outDiffuse.rgb = fmod(fmod(floor(inTexCoord.y * 2), 2) + fmod(floor(inTexCoord.x * 2), 2), 2);
+    // ホワイトノイズ
+    //outDiffuse.rgb = random2(inTexCoord);
+    // ボロノイ図（色分け）
+    //outDiffuse.rgb = volonoi_color(inTexCoord);
+    // バリューノイズ
+    //outDiffuse.rgb = valueNoise2D(inTexCoord * 1.0);
+    // パーリンノイズ
+    outDiffuse.rgb = perlinNoise2D(inTexCoord * 1.0) * 0.5 + 0.5;
     outDiffuse.a = 1.0;
 
 }
