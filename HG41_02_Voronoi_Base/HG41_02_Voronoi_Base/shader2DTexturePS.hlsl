@@ -21,6 +21,7 @@ void main( in  float4 inPosition		: SV_POSITION,
     outDiffuse.rgb = fmod(floor(inTexCoord.y + inTexCoord.x), 2);
     outDiffuse.rgb = fmod(fmod(floor(inTexCoord.y * 2), 2) + fmod(floor(inTexCoord.x * 2), 2), 2);
     outDiffuse.rgb = random2(inTexCoord);
+    outDiffuse.rgb = volonoi_color(inTexCoord);
     outDiffuse.a = 1.0;
 
 }
