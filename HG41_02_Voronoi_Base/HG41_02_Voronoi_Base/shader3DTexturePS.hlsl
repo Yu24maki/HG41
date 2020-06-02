@@ -28,8 +28,15 @@ void main(  in float4 inPosition		: SV_POSITION,
 
 			out float4 outDiffuse		: SV_Target )
 {
+    // ”ñ®”ƒuƒ‰ƒEƒ“‰^“®
+    float color = fbm3(inLocalPosition.xyz * 10.0, 5);
+    color = acos(color * 20);
+    
+    outDiffuse.b = color * 0.5 + 0.5;
+    outDiffuse.r = outDiffuse.b * 0.6;
+    outDiffuse.g = outDiffuse.b * 1.0;
 
-    outDiffuse.rgb = 1.0;
+    //outDiffuse.rgb = color;
     
     
     

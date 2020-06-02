@@ -28,7 +28,17 @@ void main( in  float4 inPosition		: SV_POSITION,
     // バリューノイズ
     //outDiffuse.rgb = valueNoise2D(inTexCoord * 1.0);
     // パーリンノイズ
-    outDiffuse.rgb = perlinNoise2D(inTexCoord * 1.0) * 0.5 + 0.5;
+    //outDiffuse.rgb = perlinNoise2D(inTexCoord * 1.0) * 0.5 + 0.5;
+    
+    // 非整数ブラウン運動
+    float3 color = fbm2(inTexCoord * 1.0, 5);
+    color = acos(color * 20);
+    
+    
+    outDiffuse.b = color * 0.5 + 0.5;
+    outDiffuse.r = outDiffuse.b * 0.6;
+    outDiffuse.g = outDiffuse.b * 1.0;
+
     outDiffuse.a = 1.0;
 
 }
