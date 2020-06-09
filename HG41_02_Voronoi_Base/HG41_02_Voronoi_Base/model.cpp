@@ -19,9 +19,9 @@ void CModel::Init()
 	m_Scale = XMFLOAT3( 1.0f, 1.0f, 1.0f );
 
 
-	//Load("data/MODEL/cube.obj");
+	Load("data/MODEL/cube.obj");
 	//Load("data/MODEL/sphere_smooth.obj");
-	Load("data/MODEL/torus.obj");
+	//Load("data/MODEL/torus.obj");
 
 
 	m_Shader = new CShader();
@@ -78,14 +78,16 @@ void CModel::Draw()
 	// インデックスバッファ設定
 	CRenderer::SetIndexBuffer( m_IndexBuffer );
 
-
+	static float time = 0.0f;
 
 	XMFLOAT4 parameter;
-	parameter.x = 0.0f;
-	parameter.y = 0.5f;
+	parameter.x = time;
+	parameter.y = time;
 	parameter.z = 1.0f;
 	m_Shader->SetPrameter(parameter);
 	m_Shader->Set();
+
+	time += 0.05f;
 
 	// 通常描画
 	for( unsigned short i = 0; i < m_SubsetNum; i++ )
