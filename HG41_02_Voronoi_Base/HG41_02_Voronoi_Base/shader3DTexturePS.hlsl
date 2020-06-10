@@ -30,21 +30,21 @@ void main(  in float4 inPosition		: SV_POSITION,
 			out float4 outDiffuse		: SV_Target )
 {
     // 非整数ブラウン運動
-    //float color = fbm3(inLocalPosition.xyz * 10.0, 5);
-    //color = acos(color * 20);
+    float color = fbm3(inLocalPosition.xyz * 10.0, 5);
+    color = acos(color * 20);
     
-    //outDiffuse.b = color * 0.5 + 0.5;
-    //outDiffuse.r = outDiffuse.b * 0.6;
-    //outDiffuse.g = outDiffuse.b * 1.0;
-
-    //outDiffuse.rgb = color;
+    outDiffuse.b = color * 0.5 + 0.5;
+    outDiffuse.r = outDiffuse.b * 0.6;
+    outDiffuse.g = outDiffuse.b * 1.0;
     
     // 木目
-    float color = fbm3(float3(inLocalPosition.x, inLocalPosition.y, inLocalPosition.z * 0.1), 3);
-    color = saturate(sin(color * 100) * 0.5 + 0.5);
-    color = color * color;
+    //float color = fbm3(float3(inLocalPosition.x, inLocalPosition.y, inLocalPosition.z * 0.1), 3);
+    //color = saturate(sin(color * 100) * 0.5 + 0.5);
+    //color = color * color;
     
-    outDiffuse.rgb = float3(0.5, 0.2, 0.1) * color + float3(0.9, 0.7, 0.4) * (1.0 - color);
+    //outDiffuse.rgb = float3(0.5, 0.2, 0.1) * color + float3(0.9, 0.7, 0.4) * (1.0 - color);
+    
+
     
     //ライティング
     float3 lightDir = float3(1.0, -1.0, 1.0);

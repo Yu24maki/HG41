@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "model.h"
 #include "polygon.h"
+#include "polygon_cloud.h"
 
 class CScene
 {
@@ -22,6 +23,7 @@ public:
 	virtual void Init()
 	{
 		AddGameObject<CCamera>();
+		AddGameObject<CPolygonCloud>();
 		AddGameObject<CModel>();
 		AddGameObject<CPolygon>();
 	}

@@ -19,8 +19,8 @@ void CModel::Init()
 	m_Scale = XMFLOAT3( 1.0f, 1.0f, 1.0f );
 
 
-	Load("data/MODEL/cube.obj");
-	//Load("data/MODEL/sphere_smooth.obj");
+	//Load("data/MODEL/cube.obj");
+	Load("data/MODEL/sphere_smooth.obj");
 	//Load("data/MODEL/torus.obj");
 
 
@@ -43,8 +43,8 @@ void CModel::Uninit()
 void CModel::Update()
 {
 
-	m_Rotation.y += 0.02f;
-	m_Rotation.x += 0.02f;
+	//m_Rotation.y += 0.02f;
+	//m_Rotation.x += 0.02f;
 
 }
 
@@ -78,16 +78,19 @@ void CModel::Draw()
 	// インデックスバッファ設定
 	CRenderer::SetIndexBuffer( m_IndexBuffer );
 
+	float radius = 1.0f;
 	static float time = 0.0f;
 
 	XMFLOAT4 parameter;
-	parameter.x = time;
-	parameter.y = time;
-	parameter.z = 1.0f;
+	parameter.x = m_Position.x;
+	parameter.y = m_Position.y;
+	parameter.z = m_Position.z;
+	parameter.w = time;
+
+	time += 0.01f;
+
 	m_Shader->SetPrameter(parameter);
 	m_Shader->Set();
-
-	time += 0.05f;
 
 	// 通常描画
 	for( unsigned short i = 0; i < m_SubsetNum; i++ )
