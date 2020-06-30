@@ -173,14 +173,14 @@ float perlinNoise3D(in float3 vec)
 }
 
 // ”ñ®”ƒuƒ‰ƒEƒ“‰^“®2D
-float fbm2(in float2 vec, int octave)
+float fbm2(in float2 vec, int octave, float offset = 0.0)
 {
     float value = 0.0;
     float amplitude = 1.0;
     
     for (int i = 0; i < octave; i++)
     {
-        value += amplitude * perlinNoise2D(vec);
+        value += amplitude * perlinNoise2D(vec + offset);
         vec *= 2.0;
         amplitude *= 0.5;
     }
