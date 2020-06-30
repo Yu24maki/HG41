@@ -92,6 +92,44 @@ float3 volonoi_color(in float2 vec)
     return color;
 }
 
+// 色分け
+float3 volonoi_color3D(in float3 vec)
+{
+    float3 color = float3(1.0f, 1.0f, 1.0f);
+    float3 pos = float3(1.0f, 1.0f, 1.0f);
+    
+    float3 ivec = floor(vec);
+    float3 fvec = frac(vec);
+    
+    float value = 1.0f;
+    
+    for (int z = -1; z <= 1;z++)
+    {
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                float3 offset = float3(x, y, z);
+            
+                float3 position;
+                position = random33(ivec + offset);
+            
+                float dist = distance(position + offset, fvec);
+            
+                if (value > dist)
+                {
+                    value = min(value, dist);
+                    pos = position;
+                }
+            }
+
+        }
+    }
+    color = float3(frac(pos.r), frac(pos.g), frac(pos.b));
+    return color;
+}
+
+
 // バリューノイズ2D
 float valueNoise2D(in float2 vec)
 {

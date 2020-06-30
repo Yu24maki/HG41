@@ -23,7 +23,7 @@ public:
 	virtual void Init()
 	{
 		AddGameObject<CCamera>();
-		AddGameObject<CPolygonCloud>();
+		//AddGameObject<CPolygonCloud>();
 		AddGameObject<CModel>();
 		AddGameObject<CPolygon>();
 	}

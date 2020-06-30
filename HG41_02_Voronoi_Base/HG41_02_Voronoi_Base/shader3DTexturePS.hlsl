@@ -30,13 +30,18 @@ void main(  in float4 inPosition		: SV_POSITION,
 			out float4 outDiffuse		: SV_Target )
 {
     // ”ñ®”ƒuƒ‰ƒEƒ“‰^“®
-    float color = fbm3(inLocalPosition.xyz * 10.0, 5);
+    float color = fbm3(inLocalPosition.xyz * 10.0, 5, Parameter.w * 1.2);
     color = acos(color * 20);
+    color = saturate(color);
     
     outDiffuse.b = color * 0.5 + 0.5;
     outDiffuse.r = outDiffuse.b * 0.6;
     outDiffuse.g = outDiffuse.b * 1.0;
     
+    if (outDiffuse.b < 0.8)
+    {
+        outDiffuse.rgb = volonoi_color3D(inLocalPosition.xyz * 5.0 + Parameter.w * 0.3) * 0.4;
+    }
     // –Ø–Ú
     //float color = fbm3(float3(inLocalPosition.x, inLocalPosition.y, inLocalPosition.z * 0.1), 3);
     //color = saturate(sin(color * 100) * 0.5 + 0.5);
@@ -51,7 +56,7 @@ void main(  in float4 inPosition		: SV_POSITION,
     lightDir = normalize(lightDir);
     
     float light = 0.5 - dot(inNormal.xyz, lightDir) * 0.5;
-    outDiffuse.rgb *= light;
+    //outDiffuse.rgb *= light;
         
     
     
