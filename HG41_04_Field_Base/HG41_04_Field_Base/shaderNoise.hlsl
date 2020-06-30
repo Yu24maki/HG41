@@ -205,14 +205,14 @@ float fbm3(in float3 vec, int octave)
 }
 
 // fbm2‚Ìâ‘Î’l”Å
-float turbulance2(in float2 vec, int octave)
+float turbulance2(in float2 vec, int octave, float offset = 0.0)
 {
     float value = 0.0;
     float amplitude = 1.0;
     
     for (int i = 0; i < octave; i++)
     {
-        value -= amplitude * abs(perlinNoise2D(vec));
+        value -= amplitude * abs(perlinNoise2D(vec + offset));
         vec *= 2.0;
         amplitude *= 0.5;
     }

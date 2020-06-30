@@ -45,5 +45,11 @@ void main( in  float4 inPosition		: SV_POSITION,
     
 	outDiffuse = g_Texture.Sample(g_SamplerState, inTexCoord * 1.0);
     outDiffuse *= light;
+    
+    float height = -inWorldPosition.y + 2.5;
+    height = saturate(height);
+    
+    outDiffuse.rgb = outDiffuse.rgb * (1.0 - height) + float3(0.0, 0.2, 0.2) * height;
+    
     outDiffuse.a = 1.0;
 }

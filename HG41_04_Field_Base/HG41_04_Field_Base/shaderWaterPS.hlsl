@@ -30,25 +30,28 @@ void main( in  float4 inPosition		: SV_POSITION,
 
 			out float4 outDiffuse		: SV_Target )
 {
-    int octave = 5;
-    float dx = fbm2(inTexCoord + float2(0.0001, 0.0), octave, Parameter.x)
-            - fbm2(inTexCoord + float2(-0.0001, 0.0), octave, Parameter.x);
-    float dz = fbm2(inTexCoord + float2(0.0, 0.0001), octave, Parameter.x)
-            - fbm2(inTexCoord + float2(0.0, -0.0001), octave, Parameter.x);
+    int octave = 7;
+    float dx = turbulance2(inTexCoord * 0.5 + float2(0.0001, 0.0), octave, Parameter.x * 0.5)
+            - turbulance2(inTexCoord * 0.5 + float2(-0.0001, 0.0), octave, Parameter.x * 0.5);
+    float dz = turbulance2(inTexCoord * 0.5 + float2(0.0, 0.0001), octave, Parameter.x * 0.5)
+            - turbulance2(inTexCoord * 0.5 + float2(0.0, -0.0001), octave, Parameter.x * 0.5);
     
     float3 normal = float3(dx * 3000.0, 1.0, -dz * 3000.0);
     normal = normalize(normal);
     
-    //float3 lightDir = float3(1.0, -0.5, 1.0);
-    //lightDir = normalize(lightDir);
+    float3 lightDir = float3(1.0, -0.5, 1.0);
+    lightDir = normalize(lightDir);
     
-    //float light = saturate(0.5 - dot(normal, lightDir) * 0.5);
+    float light = saturate(0.5 - dot(normal, lightDir) * 0.5);
     
     float3 eyev = inWorldPosition.xyz - CameraPosition.xyz;
     eyev = normalize(eyev);
+
+    float3 ref = reflect(-lightDir, normal);
+    float specular = pow(saturate(dot(ref, eyev)), 10);
     
     float fresnel = saturate(1.0 + dot(eyev, normal));
     fresnel = 0.05 + (1.0 - 0.05) * pow(fresnel, 5);
-    outDiffuse.rgb = float3(0.0, 0.1, 0.1) * (1.0 - fresnel) + float3(0.8, 0.85, 0.9) * fresnel;
-    outDiffuse.a = 1.0;
+    outDiffuse.rgb = float3(0.0, 0.1, 0.1) * (1.0 - fresnel) + float3(0.4, 0.5, 0.55) * fresnel + float3(1.0, 1.0, 1.0) * specular;
+    outDiffuse.a = fresnel + specular;
 }
