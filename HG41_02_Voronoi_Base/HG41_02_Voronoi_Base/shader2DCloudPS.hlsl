@@ -73,10 +73,11 @@ void main(in float4 inPosition : SV_POSITION,
         float3 rp = rayPos;
         for (int j = 0; j < 30; j++)
         {
-            float3 fbmSeed = (rp + float3(0.1, 0.02, 0.1) * Parameter.w) * float3(1.0,1.2,1.5);
-            color += fbm3(fbmSeed * (1.0), 3) / 5.0;
+            //float3 fbmSeed = (rp + float3(0.1, 0.02, 0.1) * Parameter.w) * float3(1.0,1.2,1.5);
+            float3 fbmSeed = (rp) * float3(1.0, 1.2, 1.5);
+            color += fbm3(fbmSeed * (0.3), 3, Parameter.w * 0.3) / 5.0;
 
-            rp = rp + rayDir * j * 0.01;
+            rp = rp + rayDir * j * 0.1;
         }
         color.a = color.a * 0.5 + 0.5;
     }
