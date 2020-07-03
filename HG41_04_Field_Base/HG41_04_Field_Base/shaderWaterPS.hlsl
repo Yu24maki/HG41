@@ -52,6 +52,7 @@ void main( in  float4 inPosition		: SV_POSITION,
     
     float fresnel = saturate(1.0 + dot(eyev, normal));
     fresnel = 0.05 + (1.0 - 0.05) * pow(fresnel, 5);
-    outDiffuse.rgb = float3(0.0, 0.1, 0.1) * (1.0 - fresnel) + float3(0.4, 0.5, 0.55) * fresnel + float3(1.0, 1.0, 1.0) * specular;
+    outDiffuse.rgb = float3(0.0, 0.1, 0.1) * (1.0 - fresnel) + float3(0.6, 0.7, 0.75) * fresnel;
+    outDiffuse.rgb += float3(1.0, 1.0, 1.0) * specular;
     outDiffuse.a = fresnel + specular;
 }
