@@ -17,22 +17,37 @@ void CPolygon::Init()
 	VERTEX_3D vertex[4];
 
 
+	//vertex[0].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//vertex[0].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	//vertex[0].TexCoord = XMFLOAT2(0.0f, 0.0f);
+
+	//vertex[1].Position = XMFLOAT3(200.0f, 0.0f, 0.0f);
+	//vertex[1].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	//vertex[1].TexCoord = XMFLOAT2(10.0f, 0.0f);
+
+	//vertex[2].Position = XMFLOAT3(0.0f, 200.0f, 0.0f);
+	//vertex[2].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	//vertex[2].TexCoord = XMFLOAT2(0.0f, 10.0f);
+
+	//vertex[3].Position = XMFLOAT3(200.0f, 200.0f, 0.0f);
+	//vertex[3].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	//vertex[3].TexCoord = XMFLOAT2(10.0f, 10.0f);
+
 	vertex[0].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	vertex[0].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	vertex[0].TexCoord = XMFLOAT2(0.0f, 0.0f);
+	vertex[0].TexCoord = XMFLOAT2(-SCREEN_WIDTH, -SCREEN_HEIGHT);
 
-	vertex[1].Position = XMFLOAT3(200.0f, 0.0f, 0.0f);
+	vertex[1].Position = XMFLOAT3(SCREEN_WIDTH, 0.0f, 0.0f);
 	vertex[1].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	vertex[1].TexCoord = XMFLOAT2(10.0f, 0.0f);
+	vertex[1].TexCoord = XMFLOAT2(SCREEN_WIDTH, -SCREEN_HEIGHT);
 
-	vertex[2].Position = XMFLOAT3(0.0f, 200.0f, 0.0f);
+	vertex[2].Position = XMFLOAT3(0.0f, SCREEN_HEIGHT, 0.0f);
 	vertex[2].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	vertex[2].TexCoord = XMFLOAT2(0.0f, 10.0f);
+	vertex[2].TexCoord = XMFLOAT2(-SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	vertex[3].Position = XMFLOAT3(200.0f, 200.0f, 0.0f);
+	vertex[3].Position = XMFLOAT3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f);
 	vertex[3].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	vertex[3].TexCoord = XMFLOAT2(10.0f, 10.0f);
-
+	vertex[3].TexCoord = XMFLOAT2(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 	D3D11_BUFFER_DESC bd;
@@ -52,6 +67,7 @@ void CPolygon::Init()
 	m_Shader = new CShader();
 	m_Shader->Init( "shader2DTextureVS.cso", "shader2DTexturePS.cso" );
 	
+	m_Parameter = XMFLOAT4(0.0f, 0.0f, 0.002f, 0.0f);
 
 }
 
@@ -68,7 +84,30 @@ void CPolygon::Uninit()
 
 void CPolygon::Update()
 {
-
+	if (CInput::GetKeyPress('W'))
+	{
+		m_Parameter.y -= 0.1f * (m_Parameter.z * 500.0f);
+	}
+	if (CInput::GetKeyPress('A'))
+	{
+		m_Parameter.x -= 0.1f * (m_Parameter.z * 500.0f);
+	}
+	if (CInput::GetKeyPress('S'))
+	{
+		m_Parameter.y += 0.1f * (m_Parameter.z * 500.0f);
+	}
+	if (CInput::GetKeyPress('D'))
+	{
+		m_Parameter.x += 0.1f * (m_Parameter.z * 500.0f);
+	}
+	if (CInput::GetKeyPress('E'))
+	{
+		m_Parameter.z /= 1.1f;
+	}
+	if (CInput::GetKeyPress('Q'))
+	{
+		m_Parameter.z *= 1.1f;
+	}
 
 }
 
@@ -87,6 +126,7 @@ void CPolygon::Draw()
 
 	m_Shader->SetWorldMatrix(&identity);
 	m_Shader->SetViewMatrix(&identity);
+	m_Shader->SetPrameter(m_Parameter);
 
 	XMFLOAT4X4 projection;
 	DirectX::XMStoreFloat4x4(&projection, XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f));

@@ -52,7 +52,7 @@ void CSky::Init()
 
 
 	m_Texture = new CTexture();
-	m_Texture->Load("data/TEXTURE/sky.tga");
+	m_Texture->Load("data/TEXTURE/sky2.tga");
 		
 
 

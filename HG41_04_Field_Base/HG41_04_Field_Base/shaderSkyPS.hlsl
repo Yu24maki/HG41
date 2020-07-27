@@ -37,7 +37,11 @@ void main( in  float4 inPosition		: SV_POSITION,
     cloud = saturate(cloud);
     cloud = cloud * 0.9 + 0.05;
     outDiffuse.rgb = g_Texture.Sample(g_SamplerState, float2(1.0 - cloud, 0.0));
-    outDiffuse.a = 1.0;
+    outDiffuse.a = saturate(cloud);
+    if(cloud<0.05)
+    {
+        outDiffuse.a = 0.0;
+    }
     
     
 }

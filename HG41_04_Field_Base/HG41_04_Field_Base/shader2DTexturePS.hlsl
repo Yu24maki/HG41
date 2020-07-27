@@ -5,16 +5,6 @@
 Texture2D		g_Texture : register(t0);
 SamplerState	g_SamplerState : register(s0);
 
-// 定数バッファ
-cbuffer ConstatntBuffer : register(b0)
-{
-    matrix World;
-    matrix View;
-    matrix Projection;
-
-    float4 CameraPosition;
-    float4 Parameter;
-}
 
 
 //=============================================================================
@@ -40,21 +30,15 @@ void main( in  float4 inPosition		: SV_POSITION,
     // パーリンノイズ
     //outDiffuse.rgb = perlinNoise2D(inTexCoord * 1.0) * 0.5 + 0.5;
     
-    //// 非整数ブラウン運動
-    //float3 color = fbm2(inTexCoord * 1.0, 5);
-    //color = acos(color * 20);
+    // 非整数ブラウン運動
+    float3 color = fbm2(inTexCoord * 1.0, 5);
+    color = acos(color * 20);
     
     
-    //outDiffuse.b = color * 0.5 + 0.5;
-    //outDiffuse.r = outDiffuse.b * 0.6;
-    //outDiffuse.g = outDiffuse.b * 1.0;
-    
-    float2 seed = inTexCoord * Parameter.z + float2(Parameter.x, Parameter.y);
+    outDiffuse.b = color * 0.5 + 0.5;
+    outDiffuse.r = outDiffuse.b * 0.6;
+    outDiffuse.g = outDiffuse.b * 1.0;
 
-    float color = mandelbrot(seed);
-    
-    outDiffuse.rgb = color;
-    
     outDiffuse.a = 1.0;
 
 }

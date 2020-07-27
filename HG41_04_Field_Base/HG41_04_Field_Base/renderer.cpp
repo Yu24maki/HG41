@@ -16,6 +16,9 @@ ID3D11DepthStencilView* CRenderer::m_DepthStencilView = NULL;
 ID3D11DepthStencilView* CRenderer::m_LightDepthStencilView = NULL;
 ID3D11ShaderResourceView* CRenderer::m_LightDepthShaderResourceView = NULL;
 
+ID3D11Buffer*			CRenderer::m_LightBuffer = NULL;
+
+
 ID3D11DepthStencilState* CRenderer::m_DepthStateEnable;
 ID3D11DepthStencilState* CRenderer::m_DepthStateDisable;
 
@@ -220,6 +223,28 @@ void CRenderer::Init()
 
 
 
+	// 定数バッファ生成
+	D3D11_BUFFER_DESC hBufferDesc;
+	hBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	hBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	hBufferDesc.CPUAccessFlags = 0;
+	hBufferDesc.MiscFlags = 0;
+	hBufferDesc.StructureByteStride = sizeof(float);
+
+
+	hBufferDesc.ByteWidth = sizeof(LIGHT);
+	m_D3DDevice->CreateBuffer(&hBufferDesc, NULL, &m_LightBuffer);
+	m_ImmediateContext->VSSetConstantBuffers(2, 1, &m_LightBuffer);
+	m_ImmediateContext->PSSetConstantBuffers(2, 1, &m_LightBuffer);
+
+
+	// ライト初期化
+	LIGHT light;
+	light.Direction = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+	light.Diffuse = COLOR(0.9f, 0.9f, 0.9f, 1.0f);
+	light.Ambient = COLOR(0.1f, 0.1f, 0.1f, 1.0f);
+	SetLight(light);
+
 }
 
 
@@ -298,6 +323,13 @@ void CRenderer::SetTexture( CTexture* Texture, unsigned int Slot )
 
 	ID3D11ShaderResourceView* srv[1] = { Texture->GetShaderResourceView() };
 	m_ImmediateContext->PSSetShaderResources( Slot, 1, srv );
+
+}
+
+void CRenderer::SetLight(LIGHT Light)
+{
+
+	m_ImmediateContext->UpdateSubresource(m_LightBuffer, 0, NULL, &Light, 0, 0);
 
 }
 

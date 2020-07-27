@@ -104,6 +104,7 @@ private:
 	static ID3D11DepthStencilView* m_LightDepthStencilView;
 	static ID3D11ShaderResourceView* m_LightDepthShaderResourceView;
 
+	static ID3D11Buffer*			m_LightBuffer;
 
 
 
@@ -128,6 +129,7 @@ public:
 	static void SetVertexBuffers( ID3D11Buffer* VertexBuffer, unsigned int stride=sizeof(VERTEX_3D));
 	static void SetIndexBuffer( ID3D11Buffer* IndexBuffer );
 	static void SetTexture( CTexture* Texture, unsigned int Slot=0 );
+	static void SetLight(LIGHT Light);
 	static void SetDepthTexture( unsigned int Slot = 0 );
 	static void DrawIndexed( unsigned int IndexCount, unsigned int StartIndexLocation, int BaseVertexLocation );
 

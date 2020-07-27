@@ -4,13 +4,18 @@
 #include "shader.h"
 
 
-class CPolygon : public CGameObject
+class CAtmosphere : public CGameObject
 {
 private:
 
 	ID3D11Buffer*	m_VertexBuffer = NULL;
 	CShader*		m_Shader;
-	XMFLOAT4		m_Parameter;
+
+	CTexture*		m_Texture[2];
+
+	XMFLOAT4		m_Blend;
+
+	float			m_LightRotation;
 
 public:
 	void Init();

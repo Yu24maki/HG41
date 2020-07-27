@@ -241,3 +241,21 @@ float fbm3(in float3 vec, int octave, float offset = 0.0)
 
     return value;
 }
+
+// マンデルブロ集合
+float mandelbrot(in float2 c)
+{
+    float2 z = 0.0;
+    
+    for (int i = 0; i < 1000;i++)
+    {
+        z = float2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
+        
+        if (dot(z, z) > 1000.0)
+        {
+            return pow(i / 100.0, 5);
+        }
+    }
+
+    return 0;
+}
