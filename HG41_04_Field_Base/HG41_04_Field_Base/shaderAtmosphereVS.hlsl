@@ -30,12 +30,17 @@ void main(in float4 inPosition : POSITION0,
     matrix wvp;
     wvp = mul(World, View);
     wvp = mul(wvp, Projection);
-    wvp = Projection;
 
     outPosition = mul(inPosition, wvp);
+    outWorldPosition = mul(inPosition, World);
+    outNormal = inNormal;
+    outTexCoord = inTexCoord;
+
+    float4 worldNormal, normal;
+    normal = float4(inNormal.xyz, 0.0);
+    worldNormal = mul(normal, World);
+    worldNormal = normalize(worldNormal);
 
     outDiffuse = inDiffuse;
-
-    outTexCoord = inTexCoord;
 }
 

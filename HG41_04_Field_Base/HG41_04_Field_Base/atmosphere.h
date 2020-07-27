@@ -1,21 +1,24 @@
 #pragma once
 
 
-#include "shader.h"
-
-
 class CAtmosphere : public CGameObject
 {
 private:
 
 	ID3D11Buffer*	m_VertexBuffer = NULL;
-	CShader*		m_Shader;
+	ID3D11Buffer*	m_IndexBuffer = NULL;
+	CTexture*		m_Texture = NULL;
+	CShader*		m_Shader = NULL;
 
-	CTexture*		m_Texture[2];
 
-	XMFLOAT4		m_Blend;
+	static const int SKY_X = 32;
+	static const int SKY_Z = 32;
+
+	VERTEX_3D m_Vertex[SKY_X * SKY_Z];
+
 
 	float			m_LightRotation;
+
 
 public:
 	void Init();

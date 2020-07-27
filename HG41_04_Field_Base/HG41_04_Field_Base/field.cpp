@@ -6,6 +6,7 @@
 #include "texture.h"
 
 #include "camera.h"
+#include "light.h"
 
 #include "input.h"
 
@@ -149,6 +150,7 @@ void CField::Draw()
 	m_Shader->SetViewMatrix(&camera->GetViewMatrix());
 	m_Shader->SetProjectionMatrix(&camera->GetProjectionMatrix());
 	m_Shader->SetCameraPosition(&camera->GetPosition());
+	m_Shader->SetLight(CLight::GetInstance());
 
 	m_Shader->Set();
 

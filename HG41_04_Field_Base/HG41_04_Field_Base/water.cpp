@@ -6,6 +6,7 @@
 #include "game_object.h"
 #include "texture.h"
 #include "camera.h"
+#include "light.h"
 #include "water.h"
 
 
@@ -121,6 +122,7 @@ void CWater::Draw()
 	m_Shader->SetCameraPosition(&camera->GetPosition());
 
 	m_Shader->SetPrameter( XMFLOAT4(m_Time, 0.0f, 0.0f, 0.0f));
+	m_Shader->SetLight(CLight::GetInstance());
 
 	m_Shader->Set();
 

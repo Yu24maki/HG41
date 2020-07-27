@@ -18,6 +18,20 @@ cbuffer ConstatntBuffer : register(b0)
 }
 
 
+// ライトバッファ
+struct LIGHT
+{
+    float4 Direction;
+    float4 Diffuse;
+    float4 Ambient;
+};
+
+cbuffer LightBuffer : register(b1)
+{
+    LIGHT Light;
+}
+
+
 
 //=============================================================================
 // ピクセルシェーダ
@@ -39,8 +53,15 @@ void main( in  float4 inPosition		: SV_POSITION,
     float3 normal = float3(dx * 3000.0, 1.0, -dz * 3000.0);
     normal = normalize(normal);
     
-    float3 lightDir = float3(1.0, -0.5, 1.0);
+    float3 lightDir = Light.Direction.xyz;
     lightDir = normalize(lightDir);
+    
+            
+    //レイリー散乱
+    float3 vy = float3(0.0, 1.0, 0.0);
+    float atm = saturate(1.0 - dot(-Light.Direction.xyz, vy));
+    float3 rcolor = 1.0 - float3(0.4, 0.8, 1.0) * atm;
+
     
     float light = saturate(0.5 - dot(normal, lightDir) * 0.5);
     
@@ -52,7 +73,7 @@ void main( in  float4 inPosition		: SV_POSITION,
     
     float fresnel = saturate(1.0 + dot(eyev, normal));
     fresnel = 0.05 + (1.0 - 0.05) * pow(fresnel, 5);
-    outDiffuse.rgb = float3(0.0, 0.1, 0.1) * (1.0 - fresnel) + float3(0.6, 0.7, 0.75) * fresnel;
-    outDiffuse.rgb += float3(1.0, 1.0, 1.0) * specular;
+    outDiffuse.rgb = float3(0.0, 0.1, 0.1) * (1.0 - fresnel) + rcolor * fresnel;
+    outDiffuse.rgb += float3(1.0, 1.0, 1.0) * specular * rcolor;
     outDiffuse.a = fresnel + specular;
 }

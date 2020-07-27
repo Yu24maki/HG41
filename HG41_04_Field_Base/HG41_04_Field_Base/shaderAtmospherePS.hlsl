@@ -13,6 +13,7 @@ cbuffer ConstantBuffer : register(b0)
     float4 CameraPosition;
 }
 
+
 // ライトバッファ
 struct LIGHT
 {
@@ -38,46 +39,40 @@ void main(in float4 inPosition : SV_POSITION,
 
 			out float4 outDiffuse : SV_Target)
 {
-
-    float3 diffuse = 0;
     
-    float2 tc = float2(inTexCoord.xy * 2.0 - 1.0) * float2(1.0, -1.0);
-    tc.x *= 16.0 / 9.0;
-    float3 rayDir = normalize(float3(tc, 1.0));
-    float4 rayRot = mul(float4(rayDir, 0.0), World);
-    rayDir = rayRot.xyz;
-
+    //ライティング
+    float3 normal = normalize(inNormal.xyz);
+    float light = -dot(Light.Direction.xyz, inNormal.xyz);
+    
+    float3 diffuse = inDiffuse.rgb * light;
+    
     
     //大気距離
-    float dxz = 900.0;
-    float dy = 100.0;
-    float la = atan2(-Light.Direction.y, length(-Light.Direction.xz));
-    float dist = length(float2(dxz * cos(la), dy * sin(la)));
+    float dist = distance(inWorldPosition.xyz, CameraPosition.xyz);
     
     //視線ベクトル
-    float3 eye = rayDir;
+    float3 eye = inWorldPosition.xyz - CameraPosition.xyz;
     eye = normalize(eye);
     
     
     //ミー散乱
     float m = saturate(-dot(Light.Direction.xyz, eye));
-    m = pow(m, 70);
+    m = pow(saturate(m), 50);
     
-    diffuse += m * dist * 0.0005;
+    diffuse += m * dist * 0.005;
     
     
     //レイリー散乱
     float3 vy = float3(0.0, 1.0, 0.0);
     float atm = saturate(1.0 - dot(-Light.Direction.xyz, vy));
-    float3 rcolor = 1.0 - float3(0.5, 0.8, 1.0) * atm;
+    float3 rcolor = 1.0 - float3(0.4, 0.8, 1.0) * atm;
     
     //diffuse += rcolor;
     
     float ld = 0.5 - dot(Light.Direction.xyz, eye) * 0.5;
-    diffuse += rcolor * dist * ld * float3(0.5, 0.8, 1.0) * 0.002;
+    diffuse += rcolor * dist * ld * float3(0.5, 0.8, 1.0) * 0.006;
     
     outDiffuse.rgb = diffuse;
-    //outDiffuse.rgb = float3(0.2, 0.5, 0.8);
-    outDiffuse.a = 1.0f;
+    outDiffuse.a = inDiffuse.a;
 
 }

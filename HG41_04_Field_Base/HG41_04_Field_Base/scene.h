@@ -6,6 +6,7 @@
 #include "game_object.h"
 
 #include "camera.h"
+#include "light.h"
 #include "field.h"
 #include "model.h"
 #include "polygon.h"
@@ -26,9 +27,10 @@ public:
 	virtual void Init()
 	{
 		AddGameObject<CCamera>();
+		AddGameObject<CLight>();
 		AddGameObject<CAtmosphere>();
 		AddGameObject<CField>();
-		//AddGameObject<CSky>();
+		AddGameObject<CSky>();
 		AddGameObject<CWater>();
 		//AddGameObject<CModel>();
 		//AddGameObject<CModelNormal>();

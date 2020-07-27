@@ -65,6 +65,9 @@
     <ClCompile Include="atmosphere.cpp">
       <Filter>ソース ファイル\game_object</Filter>
     </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>ソース ファイル\game_object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -110,6 +113,9 @@
       <Filter>ソース ファイル\game_object</Filter>
     </ClInclude>
     <ClInclude Include="atmosphere.h">
+      <Filter>ソース ファイル\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
       <Filter>ソース ファイル\game_object</Filter>
     </ClInclude>
   </ItemGroup>
