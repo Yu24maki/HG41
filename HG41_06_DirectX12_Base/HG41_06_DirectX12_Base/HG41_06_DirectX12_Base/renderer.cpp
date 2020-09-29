@@ -2,9 +2,13 @@
 #include "main.h"
 #include "renderer.h"
 #include "polygon2D.h"
+#include "field.h"
+#include "cube.h"
 
 CRenderer* CRenderer::m_Instance = nullptr;
-CPolygon2D *m_Polygon = nullptr;
+CPolygon2D m_Polygon;
+CField m_Field;
+CCube m_Cube;
 
 
 CRenderer::CRenderer()
@@ -404,8 +408,11 @@ void CRenderer::Initialize()
 		assert(SUCCEEDED(hr));
 	}
 
-	m_Polygon = new CPolygon2D();
-	m_Polygon->Init();
+	m_Polygon.Init();
+
+	m_Field.Init();
+
+	m_Cube.Init();
 
 }
 
@@ -413,7 +420,9 @@ void CRenderer::Initialize()
 void CRenderer::Update()
 {
 
-	m_Polygon->Update();
+	m_Polygon.Update();
+	m_Field.Update();
+	m_Cube.Update();
 
 }
 
@@ -449,8 +458,9 @@ void CRenderer::Draw()
 
 	//オブジェクト描画
 
-
-	m_Polygon->Draw(m_GraphicsCommandList.Get());
+	m_Field.Draw(m_GraphicsCommandList.Get());
+	m_Cube.Draw(m_GraphicsCommandList.Get());
+	m_Polygon.Draw(m_GraphicsCommandList.Get());
 
 
 	//プレゼント用リソースバリア

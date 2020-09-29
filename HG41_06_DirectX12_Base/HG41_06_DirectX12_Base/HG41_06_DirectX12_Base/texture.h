@@ -1,0 +1,17 @@
+#pragma once
+
+#include "main.h"
+
+using namespace Microsoft::WRL;
+
+class CTexture
+{
+private:
+	ComPtr<ID3D12Resource>			m_Resource;
+	ComPtr<ID3D12DescriptorHeap>	m_DescriptorHeap;
+
+public:
+	void Load(const char *pFileName);
+	ComPtr<ID3D12DescriptorHeap>	GetDescriptorHeap()
+	{ return m_DescriptorHeap; }
+};

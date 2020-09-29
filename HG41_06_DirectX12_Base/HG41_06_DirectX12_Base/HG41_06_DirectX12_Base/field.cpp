@@ -1,9 +1,9 @@
 #include "main.h"
-#include "polygon2D.h"
+#include "field.h"
 #include "renderer.h"
 
 
-void CPolygon2D::Init()
+void CField::Init()
 {
 	ComPtr<ID3D12Device> device = CRenderer::GetInstance()->GetDevice();
 
@@ -12,20 +12,20 @@ void CPolygon2D::Init()
 	D3D12_HEAP_PROPERTIES heapProperties = {};
 	D3D12_RESOURCE_DESC resourceDesc = {};
 
-	heapProperties.Type					 = D3D12_HEAP_TYPE_UPLOAD;
-	heapProperties.CPUPageProperty		 = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	heapProperties.MemoryPoolPreference	 = D3D12_MEMORY_POOL_UNKNOWN;
-	heapProperties.CreationNodeMask		 = 0;
-	heapProperties.VisibleNodeMask		 = 0;
+	heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	heapProperties.CreationNodeMask = 0;
+	heapProperties.VisibleNodeMask = 0;
 
-	resourceDesc.Dimension			 = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Height				 = 1;
-	resourceDesc.DepthOrArraySize	 = 1;
-	resourceDesc.MipLevels			 = 1;
-	resourceDesc.Format				 = DXGI_FORMAT_UNKNOWN;
-	resourceDesc.Layout				 = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resourceDesc.SampleDesc.Count	 = 1;
-	resourceDesc.SampleDesc.Quality	 = 0;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc.Height = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.SampleDesc.Quality = 0;
 
 	// 頂点バッファの作成
 	resourceDesc.Width = sizeof(Vertex3D) * 4;
@@ -42,18 +42,18 @@ void CPolygon2D::Init()
 	hr = m_VertexBuffer->Map(0, nullptr, (void**)&buffer);
 	assert(SUCCEEDED(hr));
 
-	buffer[0].Position = {0.0f, 0.0f, 0.0f};
-	buffer[1].Position = {100.0f, 0.0f, 0.0f};
-	buffer[2].Position = {0.0f, 100.0f, 0.0f};
-	buffer[3].Position = {100.0f, 100.0f, 0.0f};
-	buffer[0].Normal = {0.0f,1.0f,0.0f};
-	buffer[1].Normal = {0.0f,1.0f,0.0f};
-	buffer[2].Normal = {0.0f,1.0f,0.0f};
-	buffer[3].Normal = {0.0f,1.0f,0.0f};
-	buffer[0].TexCoord = {0.0f,0.0f};
-	buffer[1].TexCoord = {1.0f,0.0f};
-	buffer[2].TexCoord = {0.0f,1.0f};
-	buffer[3].TexCoord = {1.0f,1.0f};
+	buffer[0].Position = { -5.0f,  0.0f,  5.0f };
+	buffer[1].Position = {  5.0f,  0.0f,  5.0f };
+	buffer[2].Position = { -5.0f,  0.0f, -5.0f };
+	buffer[3].Position = {  5.0f,  0.0f, -5.0f };
+	buffer[0].Normal = { 0.0f,1.0f,0.0f };
+	buffer[1].Normal = { 0.0f,1.0f,0.0f };
+	buffer[2].Normal = { 0.0f,1.0f,0.0f };
+	buffer[3].Normal = { 0.0f,1.0f,0.0f };
+	buffer[0].TexCoord = { 0.0f,0.0f };
+	buffer[1].TexCoord = { 10.0f,0.0f };
+	buffer[2].TexCoord = { 0.0f,10.0f };
+	buffer[3].TexCoord = { 10.0f,10.0f };
 
 	m_VertexBuffer->Unmap(0, nullptr);
 
@@ -63,19 +63,23 @@ void CPolygon2D::Init()
 }
 
 
-void CPolygon2D::Update()
+void CField::Update()
 {
 
 }
 
 
-void CPolygon2D::Draw(ID3D12GraphicsCommandList *pCommandList)
+void CField::Draw(ID3D12GraphicsCommandList *pCommandList)
 {
 	HRESULT hr;
 
 	// マトリクス設定
+	XMVECTOR eyePos = XMLoadFloat3(new XMFLOAT3(0.0f,5.0f,-10.0f));
+	XMVECTOR forcus = XMLoadFloat3(new XMFLOAT3(0.0f, 0.0f, 0.0f));
+	XMVECTOR Up = XMLoadFloat3(new XMFLOAT3(0.0f, 1.0f, 0.0f));
 	XMMATRIX view = XMMatrixIdentity();
-	XMMATRIX projection = XMMatrixOrthographicOffCenterLH(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f);
+	view = XMMatrixLookAtLH(eyePos, forcus, Up);
+	XMMATRIX projection = XMMatrixPerspectiveFovLH(1.0f, (float)SCREEN_WIDTH / SCREEN_HEIGHT, 0.01f, 1000.0f);
 	XMMATRIX world = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
 	// 定数バッファ設定
@@ -116,7 +120,7 @@ void CPolygon2D::Draw(ID3D12GraphicsCommandList *pCommandList)
 }
 
 
-void CPolygon2D::Uninit()
+void CField::Uninit()
 {
 
 }

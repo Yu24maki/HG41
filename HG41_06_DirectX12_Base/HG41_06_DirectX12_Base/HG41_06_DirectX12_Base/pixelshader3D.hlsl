@@ -13,5 +13,10 @@ SamplerState sampler0 : register(s0);
 
 float4 main(in PS_INPUT input) : SV_TARGET
 {
-    return input.Diffuse * texture0.Sample(sampler0, input.Texcoord);
+    float3 lightDir = float3(1.0f, -1.0f, 1.0f);
+    lightDir = normalize(lightDir);
+    
+    float lam = dot(normalize(input.Normal.xyz), -lightDir);
+    
+    return lam * input.Diffuse * texture0.Sample(sampler0, input.Texcoord);
 }

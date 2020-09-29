@@ -17,7 +17,7 @@ struct PS_INPUT
 {
     float4 Position : SV_POSITION;
     float4 Normal : NORMAL;
-    float4 Texcoord : TEXCOORD;
+    float2 Texcoord : TEXCOORD;
     float4 Diffuse : DIFFUSE;
 };
 
@@ -30,7 +30,7 @@ void main(in VS_INPUT input, out PS_INPUT output)
     float4 normal = float4(input.Normal, 0.0f);
     output.Normal = mul(normal, World);
     
-    output.Texcoord = float4(input.Texcoord, 0.0f, 0.0f);
+    output.Texcoord = input.Texcoord;
     
     output.Diffuse.rgb = float3(1.0f, 1.0f, 1.0f);
     output.Diffuse.a = 1.0f;

@@ -5,7 +5,7 @@
 
 using namespace Microsoft::WRL;
 
-class CPolygon2D
+class CField
 {
 private:
 	ComPtr<ID3D12Resource>	m_VertexBuffer;
