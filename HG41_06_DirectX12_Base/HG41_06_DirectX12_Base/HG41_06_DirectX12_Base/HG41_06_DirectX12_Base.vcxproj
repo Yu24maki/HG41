@@ -115,16 +115,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="field.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="polygon2D.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="field.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="polygon2D.h" />
     <ClInclude Include="renderer.h" />

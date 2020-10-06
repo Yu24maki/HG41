@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "renderer.h"
+#include "camera.h"
 #include "polygon2D.h"
 #include "field.h"
 #include "cube.h"
@@ -408,6 +409,10 @@ void CRenderer::Initialize()
 		assert(SUCCEEDED(hr));
 	}
 
+	CCamera::Init();
+	CCamera::SetPosition(XMFLOAT3(0.0f, 5.0f, -10.0f));
+	CCamera::SetRotation(XMFLOAT3(0.5f, 0.0f, 0.0f));
+
 	m_Polygon.Init();
 
 	m_Field.Init();
@@ -419,7 +424,7 @@ void CRenderer::Initialize()
 
 void CRenderer::Update()
 {
-
+	CCamera::Update();
 	m_Polygon.Update();
 	m_Field.Update();
 	m_Cube.Update();
@@ -458,6 +463,7 @@ void CRenderer::Draw()
 
 	//オブジェクト描画
 
+	CCamera::Draw(m_GraphicsCommandList.Get());
 	m_Field.Draw(m_GraphicsCommandList.Get());
 	m_Cube.Draw(m_GraphicsCommandList.Get());
 	m_Polygon.Draw(m_GraphicsCommandList.Get());

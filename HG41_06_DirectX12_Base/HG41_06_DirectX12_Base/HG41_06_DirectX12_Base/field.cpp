@@ -1,6 +1,7 @@
 #include "main.h"
 #include "field.h"
 #include "renderer.h"
+#include "camera.h"
 
 
 void CField::Init()
@@ -74,12 +75,8 @@ void CField::Draw(ID3D12GraphicsCommandList *pCommandList)
 	HRESULT hr;
 
 	// マトリクス設定
-	XMVECTOR eyePos = XMLoadFloat3(new XMFLOAT3(0.0f,5.0f,-10.0f));
-	XMVECTOR forcus = XMLoadFloat3(new XMFLOAT3(0.0f, 0.0f, 0.0f));
-	XMVECTOR Up = XMLoadFloat3(new XMFLOAT3(0.0f, 1.0f, 0.0f));
-	XMMATRIX view = XMMatrixIdentity();
-	view = XMMatrixLookAtLH(eyePos, forcus, Up);
-	XMMATRIX projection = XMMatrixPerspectiveFovLH(1.0f, (float)SCREEN_WIDTH / SCREEN_HEIGHT, 0.01f, 1000.0f);
+	XMMATRIX view = XMLoadFloat4x4(&CCamera::GetView());
+	XMMATRIX projection = XMLoadFloat4x4(&CCamera::GetProj());
 	XMMATRIX world = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
 	// 定数バッファ設定
