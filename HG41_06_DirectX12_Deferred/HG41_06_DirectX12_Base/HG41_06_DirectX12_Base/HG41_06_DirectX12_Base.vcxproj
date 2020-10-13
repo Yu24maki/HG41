@@ -122,6 +122,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="polygon2D.cpp" />
+    <ClCompile Include="polygon_deferred.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
@@ -132,6 +133,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="polygon2D.h" />
+    <ClInclude Include="polygon_deferred.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
