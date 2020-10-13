@@ -6,6 +6,9 @@ XMFLOAT4X4 CCamera::m_mtxProj;
 
 XMFLOAT3 CCamera::m_Position;
 XMFLOAT3 CCamera::m_Rotation;
+XMFLOAT3 CCamera::m_Front;
+XMFLOAT3 CCamera::m_Up;
+XMFLOAT3 CCamera::m_Right;
 
 void CCamera::Init()
 {
@@ -15,6 +18,9 @@ void CCamera::Init()
 
 	m_Rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_Front = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	m_Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	m_Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 }
 
 void CCamera::Uninit()
@@ -28,19 +34,19 @@ void CCamera::Update()
 	{
 		if (CInput::GetKeyPress('W'))
 		{
-			m_Position.z += 0.1f;
+			m_Position = (Vector3(m_Position) + Vector3(m_Front) * 0.1f).ToXMFLOAT3();
 		}
 		if (CInput::GetKeyPress('S'))
 		{
-			m_Position.z -= 0.1f;
+			m_Position = (Vector3(m_Position) - Vector3(m_Front) * 0.1f).ToXMFLOAT3();
 		}
 		if (CInput::GetKeyPress('A'))
 		{
-			m_Position.x -= 0.1f;
+			m_Position = (Vector3(m_Position) - Vector3(m_Right) * 0.1f).ToXMFLOAT3();
 		}
 		if (CInput::GetKeyPress('D'))
 		{
-			m_Position.x += 0.1f;
+			m_Position = (Vector3(m_Position) + Vector3(m_Right) * 0.1f).ToXMFLOAT3();
 		}
 		if (CInput::GetKeyPress('E'))
 		{
@@ -70,6 +76,16 @@ void CCamera::Update()
 		{
 			m_Rotation.x += 0.01f;
 		}
+		XMVECTOR front;
+		XMVECTOR up;
+		XMVECTOR right;
+		XMMATRIX rotation = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z);
+		front = rotation.r[2];
+		up = rotation.r[1];
+		right = rotation.r[0];
+		XMStoreFloat3(&m_Front, front);
+		XMStoreFloat3(&m_Up, up);
+		XMStoreFloat3(&m_Right, right);
 	}
 }
 

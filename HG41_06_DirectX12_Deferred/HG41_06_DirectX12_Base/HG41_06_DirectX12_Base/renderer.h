@@ -51,7 +51,6 @@ private:
 	ComPtr<ID3D12DescriptorHeap>		m_DHDS;
 	D3D12_CPU_DESCRIPTOR_HANDLE			m_DSHandle;
 	ComPtr<ID3D12RootSignature>			m_RootSignature;
-	ComPtr<ID3D12PipelineState>			m_PipelineState;
 
 	D3D12_RECT							m_ScissorRect;
 	D3D12_VIEWPORT						m_Viewport;
@@ -62,6 +61,8 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE			m_RTHandleGeometry[2];
 	ComPtr<ID3D12DescriptorHeap>		m_SRVDescriptorHeap;
 
+	ComPtr<ID3D12PipelineState>			m_PipelineStateGeometry;
+	ComPtr<ID3D12PipelineState>			m_PipelineStateLight;
 
 
 public:

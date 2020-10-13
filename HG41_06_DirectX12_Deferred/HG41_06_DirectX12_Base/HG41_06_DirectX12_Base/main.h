@@ -15,6 +15,7 @@
 #include <wrl/client.h>
 #include <DirectXMath.h>
 using namespace DirectX;
+#include "vector3.h"
 
 #pragma comment (lib, "d3d12.lib")
 #pragma comment (lib, "winmm.lib")

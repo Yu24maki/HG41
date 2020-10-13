@@ -26,4 +26,8 @@ private:
 
 	static XMFLOAT3 m_Position;
 	static XMFLOAT3 m_Rotation;
+
+	static XMFLOAT3 m_Front;
+	static XMFLOAT3 m_Up;
+	static XMFLOAT3 m_Right;
 };

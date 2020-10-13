@@ -71,6 +71,9 @@
     <ClInclude Include="polygon_deferred.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="vector3.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexShader.hlsl">
@@ -80,6 +83,18 @@
       <Filter>ソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="pixelshader3D.hlsl">
+      <Filter>ソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="geometryPS.hlsl">
+      <Filter>ソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="geometryVS.hlsl">
+      <Filter>ソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="lightingPS.hlsl">
+      <Filter>ソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="lightingVS.hlsl">
       <Filter>ソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>
