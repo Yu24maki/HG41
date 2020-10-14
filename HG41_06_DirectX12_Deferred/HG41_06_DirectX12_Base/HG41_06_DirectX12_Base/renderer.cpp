@@ -6,12 +6,14 @@
 #include "field.h"
 #include "cube.h"
 #include "polygon_deferred.h"
+#include "polygon_deferred_debug.h"
 
 CRenderer* CRenderer::m_Instance = nullptr;
 CPolygon2D m_Polygon;
 CField m_Field;
 CCube m_Cube;
 CPolygonDeferred m_PolygonDeferred;
+CPolygonDeferredDebug m_PolygonDeferredDebug;
 
 
 CRenderer::CRenderer()
@@ -255,6 +257,22 @@ void CRenderer::Initialize()
 				&clearValue,
 				IID_PPV_ARGS(&m_DiffuseResource));
 			assert(SUCCEEDED(hr));
+
+			hr = m_Device->CreateCommittedResource(&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				&clearValue,
+				IID_PPV_ARGS(&m_PositionResource));
+			assert(SUCCEEDED(hr));
+
+			hr = m_Device->CreateCommittedResource(&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				&clearValue,
+				IID_PPV_ARGS(&m_DepthResource));
+			assert(SUCCEEDED(hr));
 		}
 
 
@@ -264,7 +282,7 @@ void CRenderer::Initialize()
 			//RTVデスクリプタヒープ
 			D3D12_DESCRIPTOR_HEAP_DESC desc;
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			desc.NumDescriptors = 2;
+			desc.NumDescriptors = 4;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			desc.NodeMask = 0;
 
@@ -289,6 +307,14 @@ void CRenderer::Initialize()
 
 			m_Device->CreateRenderTargetView(m_DiffuseResource.Get(), &rtDesc, handle);
 			m_RTHandleGeometry[1] = handle;
+			handle.ptr += (size);
+
+			m_Device->CreateRenderTargetView(m_PositionResource.Get(), &rtDesc, handle);
+			m_RTHandleGeometry[2] = handle;
+			handle.ptr += (size);
+
+			m_Device->CreateRenderTargetView(m_DepthResource.Get(), &rtDesc, handle);
+			m_RTHandleGeometry[3] = handle;
 		}
 
 
@@ -298,7 +324,7 @@ void CRenderer::Initialize()
 			//SRVデスクリプタヒープ
 			D3D12_DESCRIPTOR_HEAP_DESC desc;
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			desc.NumDescriptors = 2;
+			desc.NumDescriptors = 4;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			desc.NodeMask = 0;
 
@@ -324,7 +350,12 @@ void CRenderer::Initialize()
 			handle.ptr += (size);
 
 			m_Device->CreateShaderResourceView(m_DiffuseResource.Get(), &srvDesc, handle);
+			handle.ptr += (size);
 
+			m_Device->CreateShaderResourceView(m_PositionResource.Get(), &srvDesc, handle);
+			handle.ptr += (size);
+
+			m_Device->CreateShaderResourceView(m_DepthResource.Get(), &srvDesc, handle);
 		}
 
 	}
@@ -356,7 +387,7 @@ void CRenderer::Initialize()
 
 
 
-		range[0].NumDescriptors = 2;
+		range[0].NumDescriptors = 4;
 		range[0].BaseShaderRegister = 0;
 		range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -532,7 +563,7 @@ void CRenderer::Initialize()
 	{
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipeline_state_desc{};
 
-
+	
 		std::vector<char> vertexShader;
 		std::vector<char> pixelShader;
 
@@ -657,6 +688,135 @@ void CRenderer::Initialize()
 		assert(SUCCEEDED(hr));
 	}
 
+	//G-Bufferデバッグ用パイプライン生成
+	{
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipeline_state_desc{};
+
+
+		std::vector<char> vertexShader;
+		std::vector<char> pixelShader;
+
+
+		//頂点シェーダー読み込み
+		{
+			std::ifstream file("lightingVS.cso", std::ios_base::in | std::ios_base::binary);
+			assert(file);
+
+			file.seekg(0, std::ios_base::end);
+			int filesize = (int)file.tellg();
+			file.seekg(0, std::ios_base::beg);
+
+			vertexShader.resize(filesize);
+			file.read(&vertexShader[0], filesize);
+
+			file.close();
+
+
+			pipeline_state_desc.VS.pShaderBytecode = &vertexShader[0];
+			pipeline_state_desc.VS.BytecodeLength = filesize;
+		}
+
+
+		//ピクセルシェーダー読み込み
+		{
+			std::ifstream file("deferredDebugPS.cso", std::ios_base::in | std::ios_base::binary);
+			assert(file);
+
+			file.seekg(0, std::ios_base::end);
+			int filesize = (int)file.tellg();
+			file.seekg(0, std::ios_base::beg);
+
+			pixelShader.resize(filesize);
+			file.read(&pixelShader[0], filesize);
+
+			file.close();
+
+
+			pipeline_state_desc.PS.pShaderBytecode = &pixelShader[0];
+			pipeline_state_desc.PS.BytecodeLength = filesize;
+		}
+
+
+		//インプットレイアウト
+		D3D12_INPUT_ELEMENT_DESC InputElementDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		};
+		pipeline_state_desc.InputLayout.pInputElementDescs = InputElementDesc;
+		pipeline_state_desc.InputLayout.NumElements = _countof(InputElementDesc);
+
+
+
+		pipeline_state_desc.SampleDesc.Count = 1;
+		pipeline_state_desc.SampleDesc.Quality = 0;
+		pipeline_state_desc.SampleMask = UINT_MAX;
+
+		pipeline_state_desc.NumRenderTargets = 1;
+		pipeline_state_desc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
+
+		pipeline_state_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+		pipeline_state_desc.pRootSignature = m_RootSignature.Get();
+
+
+		//ラスタライザステート
+		pipeline_state_desc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+		pipeline_state_desc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+		pipeline_state_desc.RasterizerState.FrontCounterClockwise = FALSE;
+		pipeline_state_desc.RasterizerState.DepthBias = 0;
+		pipeline_state_desc.RasterizerState.DepthBiasClamp = 0;
+		pipeline_state_desc.RasterizerState.SlopeScaledDepthBias = 0;
+		pipeline_state_desc.RasterizerState.DepthClipEnable = TRUE;
+		pipeline_state_desc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+		pipeline_state_desc.RasterizerState.AntialiasedLineEnable = FALSE;
+		pipeline_state_desc.RasterizerState.MultisampleEnable = FALSE;
+
+
+		//ブレンドステート
+		for (int i = 0; i < _countof(pipeline_state_desc.BlendState.RenderTarget); ++i)
+		{
+			pipeline_state_desc.BlendState.RenderTarget[i].BlendEnable = FALSE;
+			pipeline_state_desc.BlendState.RenderTarget[i].SrcBlend = D3D12_BLEND_ONE;
+			pipeline_state_desc.BlendState.RenderTarget[i].DestBlend = D3D12_BLEND_ZERO;
+			pipeline_state_desc.BlendState.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+			pipeline_state_desc.BlendState.RenderTarget[i].SrcBlendAlpha = D3D12_BLEND_ONE;
+			pipeline_state_desc.BlendState.RenderTarget[i].DestBlendAlpha = D3D12_BLEND_ZERO;
+			pipeline_state_desc.BlendState.RenderTarget[i].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			pipeline_state_desc.BlendState.RenderTarget[i].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+			pipeline_state_desc.BlendState.RenderTarget[i].LogicOpEnable = FALSE;
+			pipeline_state_desc.BlendState.RenderTarget[i].LogicOp = D3D12_LOGIC_OP_CLEAR;
+		}
+		pipeline_state_desc.BlendState.AlphaToCoverageEnable = FALSE;
+		pipeline_state_desc.BlendState.IndependentBlendEnable = FALSE;
+
+
+		//デプス・ステンシルステート
+		pipeline_state_desc.DepthStencilState.DepthEnable = TRUE;
+		pipeline_state_desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		pipeline_state_desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		pipeline_state_desc.DepthStencilState.StencilEnable = FALSE;
+		pipeline_state_desc.DepthStencilState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
+		pipeline_state_desc.DepthStencilState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+
+		pipeline_state_desc.DepthStencilState.FrontFace.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+		pipeline_state_desc.DepthStencilState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+		pipeline_state_desc.DepthStencilState.FrontFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+		pipeline_state_desc.DepthStencilState.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+
+		pipeline_state_desc.DepthStencilState.BackFace.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+		pipeline_state_desc.DepthStencilState.BackFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+		pipeline_state_desc.DepthStencilState.BackFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+		pipeline_state_desc.DepthStencilState.BackFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+
+		pipeline_state_desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+
+		hr = m_Device->CreateGraphicsPipelineState(&pipeline_state_desc, IID_PPV_ARGS(&m_PipelineStateDebugGeometry));
+		assert(SUCCEEDED(hr));
+	}
+
 	CCamera::Init();
 	CCamera::SetPosition(XMFLOAT3(0.0f, 5.0f, -10.0f));
 	CCamera::SetRotation(XMFLOAT3(0.5f, 0.0f, 0.0f));
@@ -668,6 +828,7 @@ void CRenderer::Initialize()
 	m_Cube.Init();
 
 	m_PolygonDeferred.Init();
+	m_PolygonDeferredDebug.Init();
 }
 
 
@@ -706,6 +867,8 @@ void CRenderer::Draw()
 		m_GraphicsCommandList->ClearDepthStencilView(m_DSHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 		m_GraphicsCommandList->ClearRenderTargetView(m_RTHandleGeometry[0], clearColor, 0, nullptr);
 		m_GraphicsCommandList->ClearRenderTargetView(m_RTHandleGeometry[1], clearColor, 0, nullptr);
+		m_GraphicsCommandList->ClearRenderTargetView(m_RTHandleGeometry[2], clearColor, 0, nullptr);
+		m_GraphicsCommandList->ClearRenderTargetView(m_RTHandleGeometry[3], clearColor, 0, nullptr);
 
 
 		// ルートシグネチャとPSOの設定
@@ -719,7 +882,7 @@ void CRenderer::Draw()
 
 
 		//レンダーターゲットの設定
-		m_GraphicsCommandList->OMSetRenderTargets(2, m_RTHandleGeometry, TRUE, &m_DSHandle);
+		m_GraphicsCommandList->OMSetRenderTargets(4, m_RTHandleGeometry, TRUE, &m_DSHandle);
 
 
 
@@ -753,6 +916,10 @@ void CRenderer::Draw()
 
 		// ここで2Dポリゴン描画
 		m_PolygonDeferred.Draw(m_GraphicsCommandList.Get(), m_SRVDescriptorHeap.Get());
+
+		//G-Bufferのデバッグ描画
+		m_GraphicsCommandList->SetPipelineState(m_PipelineStateDebugGeometry.Get());
+		m_PolygonDeferredDebug.Draw(m_GraphicsCommandList.Get(), m_SRVDescriptorHeap.Get());
 
 
 		//プレゼント用リソースバリア
@@ -827,7 +994,7 @@ void CRenderer::SetResourceBarrier(D3D12_RESOURCE_STATES BeforeState, D3D12_RESO
 
 void CRenderer::SetResourceBarrierGeometry(D3D12_RESOURCE_STATES BeforeState, D3D12_RESOURCE_STATES AfterState)
 {
-	D3D12_RESOURCE_BARRIER resourceBarrier[2] = {};
+	D3D12_RESOURCE_BARRIER resourceBarrier[4] = {};
 
 	resourceBarrier[0].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	resourceBarrier[0].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -843,7 +1010,21 @@ void CRenderer::SetResourceBarrierGeometry(D3D12_RESOURCE_STATES BeforeState, D3
 	resourceBarrier[1].Transition.StateBefore = BeforeState;
 	resourceBarrier[1].Transition.StateAfter = AfterState;
 
-	m_GraphicsCommandList->ResourceBarrier(2, resourceBarrier);
+	resourceBarrier[2].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	resourceBarrier[2].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	resourceBarrier[2].Transition.pResource = m_PositionResource.Get();
+	resourceBarrier[2].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	resourceBarrier[2].Transition.StateBefore = BeforeState;
+	resourceBarrier[2].Transition.StateAfter = AfterState;
+
+	resourceBarrier[3].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	resourceBarrier[3].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	resourceBarrier[3].Transition.pResource = m_DepthResource.Get();
+	resourceBarrier[3].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	resourceBarrier[3].Transition.StateBefore = BeforeState;
+	resourceBarrier[3].Transition.StateAfter = AfterState;
+
+	m_GraphicsCommandList->ResourceBarrier(4, resourceBarrier);
 
 }
 

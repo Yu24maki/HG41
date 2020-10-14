@@ -21,12 +21,11 @@ float4 main(in PS_INPUT input) : SV_TARGET
     float4 position = texture2.Sample(sampler0, input.Texcoord);
     float4 depth = texture3.Sample(sampler0, input.Texcoord);
    
-    float3 lightDir = float3(1.0f, -1.0f, 1.0f);
-    lightDir = normalize(lightDir);
+    float4 color[4];
+    color[0] = normal;
+    color[1] = diffuse;
+    color[2] = position;
+    color[3] = depth;
     
-    float lam = 0.5f + dot(normalize(normal.xyz), -lightDir) * 0.5f;
-    
-    //return normal;
-    //return depth;
-    return lam * diffuse;
+    return color[(int)input.Texcoord.y];
 }

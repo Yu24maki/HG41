@@ -1,9 +1,9 @@
 #include "main.h"
-#include "polygon_deferred.h"
+#include "polygon_deferred_debug.h"
 #include "renderer.h"
 
 
-void CPolygonDeferred::Init()
+void CPolygonDeferredDebug::Init()
 {
 	ComPtr<ID3D12Device> device = CRenderer::GetInstance()->GetDevice();
 
@@ -43,30 +43,30 @@ void CPolygonDeferred::Init()
 	assert(SUCCEEDED(hr));
 
 	buffer[0].Position = { 0.0f, 0.0f, 0.0f };
-	buffer[1].Position = { SCREEN_WIDTH, 0.0f, 0.0f };
+	buffer[1].Position = { SCREEN_WIDTH / 4, 0.0f, 0.0f };
 	buffer[2].Position = { 0.0f, SCREEN_HEIGHT, 0.0f };
-	buffer[3].Position = { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f };
+	buffer[3].Position = { SCREEN_WIDTH / 4, SCREEN_HEIGHT, 0.0f };
 	buffer[0].Normal = { 0.0f,1.0f,0.0f };
 	buffer[1].Normal = { 0.0f,1.0f,0.0f };
 	buffer[2].Normal = { 0.0f,1.0f,0.0f };
 	buffer[3].Normal = { 0.0f,1.0f,0.0f };
 	buffer[0].TexCoord = { 0.0f,0.0f };
 	buffer[1].TexCoord = { 1.0f,0.0f };
-	buffer[2].TexCoord = { 0.0f,1.0f };
-	buffer[3].TexCoord = { 1.0f,1.0f };
+	buffer[2].TexCoord = { 0.0f,4.0f };
+	buffer[3].TexCoord = { 1.0f,4.0f };
 
 	m_VertexBuffer->Unmap(0, nullptr);
 
 }
 
 
-void CPolygonDeferred::Update()
+void CPolygonDeferredDebug::Update()
 {
 
 }
 
 
-void CPolygonDeferred::Draw(ID3D12GraphicsCommandList *pCommandList, ID3D12DescriptorHeap *Texture)
+void CPolygonDeferredDebug::Draw(ID3D12GraphicsCommandList *pCommandList, ID3D12DescriptorHeap *Texture)
 {
 	HRESULT hr;
 
@@ -113,7 +113,7 @@ void CPolygonDeferred::Draw(ID3D12GraphicsCommandList *pCommandList, ID3D12Descr
 }
 
 
-void CPolygonDeferred::Uninit()
+void CPolygonDeferredDebug::Uninit()
 {
 
 }
