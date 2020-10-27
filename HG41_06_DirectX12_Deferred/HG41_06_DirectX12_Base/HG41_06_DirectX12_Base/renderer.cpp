@@ -494,9 +494,11 @@ void CRenderer::Initialize()
 		pipeline_state_desc.SampleDesc.Quality = 0;
 		pipeline_state_desc.SampleMask = UINT_MAX;
 
-		pipeline_state_desc.NumRenderTargets = 2;
+		pipeline_state_desc.NumRenderTargets = 4;
 		pipeline_state_desc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
 		pipeline_state_desc.RTVFormats[1] = DXGI_FORMAT_B8G8R8A8_UNORM;
+		pipeline_state_desc.RTVFormats[2] = DXGI_FORMAT_B8G8R8A8_UNORM;
+		pipeline_state_desc.RTVFormats[3] = DXGI_FORMAT_B8G8R8A8_UNORM;
 
 		pipeline_state_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
@@ -682,7 +684,7 @@ void CRenderer::Initialize()
 		pipeline_state_desc.DepthStencilState.BackFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 
 		pipeline_state_desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-
+		int a = sizeof(pipeline_state_desc);
 
 		hr = m_Device->CreateGraphicsPipelineState(&pipeline_state_desc, IID_PPV_ARGS(&m_PipelineStateLight));
 		assert(SUCCEEDED(hr));

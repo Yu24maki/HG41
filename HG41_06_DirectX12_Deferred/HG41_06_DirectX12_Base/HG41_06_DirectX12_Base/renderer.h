@@ -17,6 +17,7 @@ struct Constant
 {
 	XMFLOAT4X4 WVP;
 	XMFLOAT4X4 World;
+	XMFLOAT4 CameraPosition;
 };
 
 

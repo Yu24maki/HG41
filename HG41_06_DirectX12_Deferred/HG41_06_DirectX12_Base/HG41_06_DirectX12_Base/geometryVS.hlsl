@@ -2,6 +2,7 @@ cbuffer cbTansMatrix : register(b0)
 {
     float4x4 WVP;
     float4x4 World;
+    float4 CameraPosition;
 }
 
 

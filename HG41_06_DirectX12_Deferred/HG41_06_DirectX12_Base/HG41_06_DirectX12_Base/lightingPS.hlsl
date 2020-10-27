@@ -1,3 +1,10 @@
+cbuffer cbTansMatrix : register(b0)
+{
+    float4x4 WVP;
+    float4x4 World;
+    float4 CameraPosition;
+}
+
 struct PS_INPUT
 {
     float4 Position : SV_POSITION;
@@ -16,17 +23,33 @@ SamplerState sampler0 : register(s0);
 
 float4 main(in PS_INPUT input) : SV_TARGET
 {
+    float4 color;
+    
     float4 normal = normalize(texture0.Sample(sampler0, input.Texcoord));
     float4 diffuse = texture1.Sample(sampler0, input.Texcoord);
     float4 position = texture2.Sample(sampler0, input.Texcoord);
     float4 depth = texture3.Sample(sampler0, input.Texcoord);
    
+    // ライトベクトル
     float3 lightDir = float3(1.0f, -1.0f, 1.0f);
     lightDir = normalize(lightDir);
     
+    // ハーフランバート
     float lam = 0.5f + dot(normalize(normal.xyz), -lightDir) * 0.5f;
     
-    //return normal;
-    //return depth;
-    return lam * diffuse;
+    // カメラポジション
+    float3 cameraPos = CameraPosition.xyz;
+    float3 cameraDir = normalize(cameraPos - position.xyz);
+    float3 ref = normalize(reflect(lightDir, normal.xyz));
+    float specular = pow(saturate(dot(ref, cameraDir)), 50);
+    
+    // 深度フォグ
+    float3 fogColor = float3(0.0, 0.0, 0.0);
+    float fog = depth.r;
+
+    color.rgb = lam * diffuse + specular;
+    color.rgb = color.rgb * (1.0 - fog) + fog * fogColor;
+    color.a = 1.0;
+
+    return color;
 }

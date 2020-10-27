@@ -89,6 +89,8 @@ void CField::Draw(ID3D12GraphicsCommandList *pCommandList)
 	constant->WVP = matrix;
 	XMStoreFloat4x4(&matrix, XMMatrixTranspose(world));
 	constant->World = matrix;
+	XMFLOAT3 cpos = CCamera::GetPosition();
+	constant->CameraPosition = XMFLOAT4(cpos.x, cpos.y, cpos.z, 0.0f);
 
 	m_ConstantBuffer->Unmap(0, nullptr);
 	pCommandList->SetGraphicsRootConstantBufferView(0, m_ConstantBuffer->GetGPUVirtualAddress());

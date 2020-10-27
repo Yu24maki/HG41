@@ -1,6 +1,12 @@
 #pragma once
 
 #include "main.h"
+using namespace Microsoft::WRL;
+
+struct ConstantCamera 
+{
+	XMFLOAT3 CameraPosition;
+};
 
 class CCamera
 {
@@ -30,4 +36,7 @@ private:
 	static XMFLOAT3 m_Front;
 	static XMFLOAT3 m_Up;
 	static XMFLOAT3 m_Right;
+
+	static ComPtr<ID3D12Resource>	m_ConstantBuffer;
+
 };

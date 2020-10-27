@@ -30,4 +30,5 @@ void main(in PS_INPUT input, out PS_OUT output)
     float farZ = 1000.0f;
     output.Depth.rgb = (input.PosH.z - nearZ) / (farZ - nearZ);
     output.Depth.rgb *= input.PosH.w;
+    
 }
