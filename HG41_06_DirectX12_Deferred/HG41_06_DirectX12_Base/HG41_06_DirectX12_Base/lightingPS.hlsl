@@ -18,6 +18,7 @@ Texture2D texture0 : register(t0);
 Texture2D texture1 : register(t1);
 Texture2D texture2 : register(t2);
 Texture2D texture3 : register(t3);
+Texture2D textureEnv : register(t4);
 SamplerState sampler0 : register(s0);
 
 
@@ -50,6 +51,12 @@ float4 main(in PS_INPUT input) : SV_TARGET
     color.rgb = lam * diffuse + specular;
     color.rgb = color.rgb * (1.0 - fog) + fog * fogColor;
     color.a = 1.0;
-
-    return color;
+    
+    float2 envUV;
+    float3 refEye = reflect(cameraDir, normal.xyz);
+    envUV.x = -refEye.x * 0.3 + 0.5;
+    envUV.y = -refEye.y * 0.3 + 0.5;
+    float4 envColor = textureEnv.Sample(sampler0, envUV) * 0.5;
+    
+    return color + envColor;
 }

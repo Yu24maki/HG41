@@ -60,6 +60,9 @@ private:
 	ComPtr<ID3D12Resource>				m_DiffuseResource;
 	ComPtr<ID3D12Resource>				m_PositionResource;
 	ComPtr<ID3D12Resource>				m_DepthResource;
+
+	ComPtr<ID3D12Resource>				m_EnvResource;
+
 	ComPtr<ID3D12DescriptorHeap>		m_RTVDescriptorHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE			m_RTHandleGeometry[4];
 	ComPtr<ID3D12DescriptorHeap>		m_SRVDescriptorHeap;
