@@ -8,6 +8,7 @@
 #include "stb_image.h"
 #include "polygon_deferred.h"
 #include "polygon_deferred_debug.h"
+#include "DDSTextureLoader12.h"
 
 CRenderer* CRenderer::m_Instance = nullptr;
 CPolygon2D m_Polygon;
@@ -364,6 +365,21 @@ void CRenderer::Initialize()
 
 			stbi_image_free(image);
 		}
+		//{
+		//	std::unique_ptr<uint8_t[]> ddsData;
+		//	std::vector<D3D12_SUBRESOURCE_DATA> subresourceData;
+		//	LoadDDSTextureFromFile(m_Device.Get(), L"data/earthenvmap.dds", m_EnvResource.GetAddressOf(), ddsData, subresourceData);
+
+		//	for (int i = 0; i < subresourceData.size(); i++)
+		//	{
+		//		int width = subresourceData[i].RowPitch / 4;
+		//		int height = width;
+		//		D3D12_BOX box = { 0,0,0,(UINT)width,(UINT)height,1 };
+		//		hr = m_EnvResource->WriteToSubresource(i, &box, subresourceData[i].pData, subresourceData[i].RowPitch, subresourceData[i].SlicePitch);
+		//		assert(SUCCEEDED(hr));
+		//	}
+		//	
+		//}
 
 		// IBLテクスチャ読み込み
 		{
@@ -451,9 +467,11 @@ void CRenderer::Initialize()
 			handle.ptr += (size);
 
 			srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			srvDesc.Texture2D.MipLevels = 1;
 			m_Device->CreateShaderResourceView(m_EnvResource.Get(), &srvDesc, handle);
 			handle.ptr += (size);
 
+			srvDesc.Texture2D.MipLevels = 1;
 			m_Device->CreateShaderResourceView(m_IBLResource.Get(), &srvDesc, handle);
 		}
 
@@ -474,7 +492,7 @@ void CRenderer::Initialize()
 	//シグネチャ生成
 	{
 		D3D12_DESCRIPTOR_RANGE		range[1]{};
-		D3D12_ROOT_PARAMETER		root_parameters[2]{};
+		D3D12_ROOT_PARAMETER		root_parameters[3]{};
 		D3D12_ROOT_SIGNATURE_DESC	root_signature_desc{};
 		D3D12_STATIC_SAMPLER_DESC	sampler_desc{};
 		ComPtr<ID3DBlob> blob{};
@@ -496,6 +514,12 @@ void CRenderer::Initialize()
 		root_parameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 		root_parameters[1].DescriptorTable.NumDescriptorRanges = 1;
 		root_parameters[1].DescriptorTable.pDescriptorRanges = &range[0];
+
+		root_parameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		root_parameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		root_parameters[2].Descriptor.ShaderRegister = 1;
+		root_parameters[2].Descriptor.RegisterSpace = 0;
+
 
 
 		//サンプラー

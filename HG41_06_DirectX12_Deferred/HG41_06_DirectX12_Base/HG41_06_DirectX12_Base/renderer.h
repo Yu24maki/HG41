@@ -20,6 +20,14 @@ struct Constant
 	XMFLOAT4 CameraPosition;
 };
 
+struct Material
+{
+	XMFLOAT4 Albedo;
+	float Metallic;
+	float Roughness;
+	float dummy;
+};
+
 
 class CRenderer
 {

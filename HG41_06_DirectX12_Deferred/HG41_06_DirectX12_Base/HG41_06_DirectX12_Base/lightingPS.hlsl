@@ -125,9 +125,13 @@ float4 main(in PS_INPUT input) : SV_TARGET
     envTexCoord.y = -ref.y * 0.3 + 0.5;
     float3 specular = textureEnv.Sample(sampler0, envTexCoord) * 0.5;
     
+    float roughness = 0.01;
+    
+    //specular = textureEnv.SampleBias(sampler0, envTexCoord, roughness * 9.0) * 0.5;
+   
     
     // メタリック係数
-    float metallic = 0.001;
+    float metallic = 0.01;
     // スペキュラ係数
     float spec = 0.99;
     // フレネル係数
@@ -140,7 +144,7 @@ float4 main(in PS_INPUT input) : SV_TARGET
     color.a = 1.0;
     
     // 明度調整
-    color.rgb *= 1.5;
+    color.rgb *= 2.0;
     
     return color;
 }
